@@ -5,11 +5,16 @@
 ## 🛠️ Setup and Install
 - Clone the repository  
 ```
-git clone https://blankRiot96/unnamed-3
+git clone https://blankRiot96/logit
 ```
 - Install from current directory  
 ```
 pip install .
+```
+
+- Or simply use the `git+` syntax,  
+```
+pip install git+https://blankRiot96/logit
 ```
 
 ## 🍉 Credits
