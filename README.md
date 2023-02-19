@@ -1,5 +1,5 @@
 <div align="center">
-    <h2>Unnamed</h2>
+    <h2>Logit</h2>
 </div>
 
 ## 🛠️ Setup and Install
