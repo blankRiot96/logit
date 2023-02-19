@@ -11,6 +11,7 @@ class Logger:
     def __init__(self) -> None:
         self.level = Level.CLUTTER
         self.log_file_path: _p.Path | str = "app.log"
+        self.format = {"msg-prefix": [], "msg-suffix": []}
 
     def config_from_dict(self, log_config_dict: LogConfigDict) -> None:
         """Configurate the logger from a dictionary.
@@ -35,7 +36,6 @@ class Logger:
         self,
         level: Level = Level.CLUTTER,
         log_file_path: _p.Path | str = "app.log",
-        /,
     ) -> LogConfigDict:
         """Configurates the logger.
 
@@ -50,3 +50,14 @@ class Logger:
         self.log_file_path = log_file_path
 
         return {"level": self.level.value, "log_file_path": str(log_file_path)}
+
+    def clutter(self, msg: object = "") -> None:
+        """Clutter the terminal with temporary logs.
+
+        Arguments:
+            msg: A message to clutter the terminal with.
+        """
+        if self.level != Level.CLUTTER:
+            return
+
+        print(msg)
