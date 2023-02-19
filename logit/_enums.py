@@ -1,4 +1,5 @@
-from enum import StrEnum, auto
+from enum import StrEnum, auto, Enum
+import typing as _t
 
 
 class Level(StrEnum):
@@ -18,7 +19,7 @@ class Level(StrEnum):
     WARNING = auto()
     ERROR = auto()
 
-    def get_inversed_dict(self) -> None:
+    def get_inversed_dict(self) -> dict:
         """Gets the inversed representation of the Level enum.
 
         Example:
@@ -44,3 +45,8 @@ class Level(StrEnum):
             raise ValueError(f"'{value}' is not a valid value of any variant.")
 
         return variant
+
+    def get_level_value(level: Enum) -> int:
+        """Gets the level ranking of the level."""
+
+        return tuple(Level).index(level)

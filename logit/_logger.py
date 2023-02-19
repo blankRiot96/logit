@@ -1,17 +1,38 @@
 from ._enums import Level
 from .types_ import LogConfigDict
+from . import _common
 
 import typing as _t
 import pathlib as _p
+from .output import _output_builder, line_number, level
 
 
 class Logger:
-    """A singleton logger class."""
+    """A singleton logger class.
+
+    Example:
+        from logit import log
+        log.clutter("Test!!")  # 19:30:1 | test.py:2 | Test!! | CLUTTER
+    """
 
     def __init__(self) -> None:
-        self.level = Level.CLUTTER
+        self.__level = Level.CLUTTER
+        self.rank = self.level.get_level_value()
         self.log_file_path: _p.Path | str = "app.log"
-        self.format = {"msg-prefix": [], "msg-suffix": []}
+        self.format = {"msg-prefix": [level, line_number], "msg-suffix": []}
+
+    @property
+    def level(self) -> Level:
+        return self.__level
+
+    @level.setter
+    def level(self, val: Level) -> None:
+        self.__level = val
+        self.rank = self.__level.get_level_value()
+
+    def _output(self, msg: object) -> None:
+        """Prints out log outputs to console."""
+        print(_output_builder(self.format, msg))
 
     def config_from_dict(self, log_config_dict: LogConfigDict) -> None:
         """Configurate the logger from a dictionary.
@@ -57,7 +78,57 @@ class Logger:
         Arguments:
             msg: A message to clutter the terminal with.
         """
-        if self.level != Level.CLUTTER:
+        if self.rank > 0:
             return
 
-        print(msg)
+        _common.LEVEL = "CLUTTER"
+        self._output(msg)
+
+    def info(self, msg: object = "") -> None:
+        """Clutter the terminal with temporary logs.
+
+        Arguments:
+            msg: A message to clutter the terminal with.
+        """
+        if self.rank > 1:
+            return
+
+        _common.LEVEL = "INFO"
+        self._output(msg)
+
+    def debug(self, msg: object = "") -> None:
+        """Clutter the terminal with temporary logs.
+
+        Arguments:
+            msg: A message to clutter the terminal with.
+        """
+        if self.rank > 2:
+            return
+
+        _common.LEVEL = "DEBUG"
+        self._output(msg)
+
+    def warning(self, msg: object = "") -> None:
+        """Clutter the terminal with temporary logs.
+
+        Arguments:
+            msg: A message to clutter the terminal with.
+        """
+        if self.rank > 3:
+
+            return
+
+        _common.LEVEL = "WARNING"
+        self._output(msg)
+
+    def error(self, msg: object = "") -> None:
+        """Clutter the terminal with temporary logs.
+
+        Arguments:
+            msg: A message to clutter the terminal with.
+        """
+        if self.rank > 4:
+            return
+
+        _common.LEVEL = "ERROR"
+        self._output(msg)
