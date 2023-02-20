@@ -3,6 +3,7 @@ import pathlib as _p
 import typing as _t
 
 from . import _common
+from ._data import get_last_rotation_time, save_last_rotation_time
 from ._enums import Level
 from .output import _output_builder, level, line_number
 from .types_ import LogConfigDict
