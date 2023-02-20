@@ -73,7 +73,7 @@ class Logger:
             log_file_path: The Location of the log file.
 
         Returns:
-            A dictionary containing the releveant log config
+            A dictionary containing the relevant log config
         """
         self.level = level
         self.log_file_path = log_file_path
