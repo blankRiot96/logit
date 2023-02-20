@@ -1,3 +1,4 @@
+import os
 import pathlib as _p
 import typing as _t
 
@@ -31,7 +32,14 @@ class Logger:
         self.rank = self.__level.get_level_value()
 
     def _output(self, msg: object) -> None:
-        """Prints out log outputs to console."""
+        """Prints out log outputs to console and log file."""
+        output = _output_builder(self.format, msg)
+
+        if not os.path.exists(self.log_file_path):
+            _p.Path(self.log_file_path).touch()
+
+        with open(self.log_file_path, "a") as f:
+            f.write(output + "\n")
         print(_output_builder(self.format, msg))
 
     def config_from_dict(self, log_config_dict: LogConfigDict) -> None:

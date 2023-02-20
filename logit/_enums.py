@@ -1,5 +1,5 @@
-from enum import StrEnum, auto, Enum
 import typing as _t
+from enum import Enum, StrEnum, auto
 
 
 class Level(StrEnum):
