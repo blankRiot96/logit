@@ -1,10 +1,10 @@
-from ._enums import Level
-from .types_ import LogConfigDict
-from . import _common
-
-import typing as _t
 import pathlib as _p
-from .output import _output_builder, line_number, level
+import typing as _t
+
+from . import _common
+from ._enums import Level
+from .output import _output_builder, level, line_number
+from .types_ import LogConfigDict
 
 
 class Logger:
@@ -85,7 +85,7 @@ class Logger:
         self._output(msg)
 
     def info(self, msg: object = "") -> None:
-        """Clutter the terminal with temporary logs.
+        """Log some information.
 
         Arguments:
             msg: A message to clutter the terminal with.
@@ -97,7 +97,7 @@ class Logger:
         self._output(msg)
 
     def debug(self, msg: object = "") -> None:
-        """Clutter the terminal with temporary logs.
+        """Log some debug messages.
 
         Arguments:
             msg: A message to clutter the terminal with.
@@ -109,7 +109,7 @@ class Logger:
         self._output(msg)
 
     def warning(self, msg: object = "") -> None:
-        """Clutter the terminal with temporary logs.
+        """Warn user in logs.
 
         Arguments:
             msg: A message to clutter the terminal with.
@@ -122,7 +122,7 @@ class Logger:
         self._output(msg)
 
     def error(self, msg: object = "") -> None:
-        """Clutter the terminal with temporary logs.
+        """Mention presence of error in logs.
 
         Arguments:
             msg: A message to clutter the terminal with.
