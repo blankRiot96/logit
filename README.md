@@ -9,12 +9,10 @@ pip install logit-axis
 ```
 OR
 
-- Clone the repository
+- Clone the repository, and install from directory
 ```
 git clone https://github.com/blankRiot96/logit
-```
-- Install from current directory
-```
+cd logit
 pip install .
 ```
 

@@ -2,6 +2,6 @@
 
 import subprocess
 
-subprocess.run("git add .")
-subprocess.run("pre-commit")
-subprocess.run("aicommits.cmd")
+subprocess.run("git add .", shell=True)
+subprocess.run("pre-commit", shell=True)
+subprocess.run("aicommits.cmd", shell=True)
