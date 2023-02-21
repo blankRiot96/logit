@@ -5,8 +5,7 @@ import time
 import typing as _t
 
 from . import _common
-from ._data import (get_last_rotation_time, move_log_file,
-                    save_last_rotation_time)
+from ._data import get_last_rotation_time, move_log_file, save_last_rotation_time
 from ._enums import Level
 from ._time import parse_time_data
 from .output import _output_builder, level, line_number
@@ -44,7 +43,6 @@ class Logger:
             return
 
         last_rotation_time = get_last_rotation_time(self.log_file_path)
-        print(last_rotation_time - time.time())
         if last_rotation_time - time.time() > self.log_rotation_time:
             move_log_file(self.log_file_path)
             save_last_rotation_time(self.log_file_path)

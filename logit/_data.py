@@ -52,7 +52,6 @@ def get_last_rotation_time(log_file_path: Path) -> int:
 
     if config["files"].get(log_file_path) is None:
         config["files"][log_file_path] = {"last_rotation": time.time()}
-        print("baby")
         set_logit_config(config)
     return config["files"][log_file_path]["last_rotation"]
 

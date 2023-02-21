@@ -2,6 +2,24 @@
     <img src="assets/title_logo.png" width=500>
 </div>
 
+## 📝 Usage
+```py
+from logit import log, Level
+
+log.clutter("Test message!")
+
+log.config(level=Level.ERROR)
+
+log.clutter("Wont appear no more")
+log.error("Error error!")
+```
+
+output:
+```
+CLUTTER | test.py:3 | Test message!
+ERROR | test.py:6 | Error error!
+```
+
 ## 🛠️ Setup and Install
 - Install from `pip`
 ```
