@@ -1,5 +1,5 @@
 <div align="center">
-    <h2>Logit</h2>
+    <img src="assets/title_logo.png" width=500>
 </div>
 
 ## 🛠️ Setup and Install
