@@ -1,10 +1,14 @@
 import os
 import pathlib as _p
+import shutil
+import time
 import typing as _t
 
 from . import _common
-from ._data import get_last_rotation_time, save_last_rotation_time
+from ._data import (get_last_rotation_time, move_log_file,
+                    save_last_rotation_time)
 from ._enums import Level
+from ._time import parse_time_data
 from .output import _output_builder, level, line_number
 from .types_ import LogConfigDict
 
@@ -21,7 +25,9 @@ class Logger:
         self.__level = Level.CLUTTER
         self.rank = self.level.get_level_value()
         self.log_file_path: _p.Path | str = "app.log"
+        self.log_rotation_time: int | None = 10
         self.format = {"msg-prefix": [level, line_number], "msg-suffix": []}
+        self._rotate_time()
 
     @property
     def level(self) -> Level:
@@ -31,6 +37,17 @@ class Logger:
     def level(self, val: Level) -> None:
         self.__level = val
         self.rank = self.__level.get_level_value()
+
+    def _rotate_time(self) -> None:
+        """Rotates log files based on time duration."""
+        if self.log_rotation_time is None:
+            return
+
+        last_rotation_time = get_last_rotation_time(self.log_file_path)
+        print(last_rotation_time - time.time())
+        if last_rotation_time - time.time() > self.log_rotation_time:
+            move_log_file(self.log_file_path)
+            save_last_rotation_time(self.log_file_path)
 
     def _output(self, msg: object) -> None:
         """Prints out log outputs to console and log file."""
