@@ -72,16 +72,18 @@ class Logger:
             "log_file_path": "user_keys.log"
         }
         """
-        if "level" not in log_config_dict or "log_file_path" not in log_config_dict:
+        if set(log_config_dict) != {"level", "log_file_path", "rotation_time"}:
             raise ValueError("Required keys missing from log configuration dictionary.")
 
         self.level = Level.get_from_value(log_config_dict["level"])
-        self.log_file_path = log_config_dict["log_file_path"]
+        self.log_file_path = _p.Path(log_config_dict["log_file_path"])
+        self.log_rotation_time = parse_time_data(log_config_dict["rotation_time"])
 
     def config(
         self,
         level: Level = Level.CLUTTER,
         log_file_path: _p.Path | str = "app.log",
+        rotation_time: str = None,
     ) -> LogConfigDict:
         """Configurates the logger.
 
@@ -94,6 +96,7 @@ class Logger:
         """
         self.level = level
         self.log_file_path = log_file_path
+        self.log_rotation_time = parse_time_data(rotation_time)
 
         return {"level": self.level.value, "log_file_path": str(log_file_path)}
 
@@ -162,7 +165,8 @@ class Logger:
         """Mention presence of error in logs.
 
         Arguments:
-            msg: A message to clutter the terminal with.
+            msg: Critical application hazard
+            alerts.
         """
         if self.rank > 5:
             return

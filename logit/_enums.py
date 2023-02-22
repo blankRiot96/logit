@@ -21,7 +21,7 @@ class Level(StrEnum):
     ERROR = auto()
     CRITICAL = auto()
 
-    def get_inversed_dict(self) -> dict:
+    def get_inversed_dict() -> dict:
         """Gets the inversed representation of the Level enum.
 
         Example:
