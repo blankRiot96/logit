@@ -2,8 +2,25 @@ import datetime
 import inspect
 import os
 
+import colorama
+
 from . import _common
 from .types_ import LogFormatDict
+
+_LEVEL_COLORS = {
+    "CLUTTER": "",
+    "INFO": colorama.Fore.WHITE,
+    "DEBUG": colorama.Fore.GREEN,
+    "WARNING": colorama.Fore.YELLOW,
+    "ERROR": colorama.Fore.RED,
+    "CRITICAL": colorama.Fore.MAGENTA,
+}
+
+
+def _get_colored_str(text: str, color: colorama.Fore, /) -> str:
+    """Get a colored string with resets."""
+
+    return f"{color}{text}{colorama.Fore.RESET}"
 
 
 def local_time() -> str:
@@ -26,7 +43,8 @@ def line_number() -> str:
 def level() -> str:
     """Returns the current level of logging."""
 
-    return f"[{_common.LEVEL}]"
+    colored_level = _get_colored_str(_common.LEVEL, _LEVEL_COLORS[_common.LEVEL])
+    return f"[{colored_level}]"
 
 
 def _output_builder(format: LogFormatDict, msg: object) -> str:

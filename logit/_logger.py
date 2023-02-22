@@ -5,7 +5,8 @@ import time
 import typing as _t
 
 from . import _common
-from ._data import get_last_rotation_time, move_log_file, save_last_rotation_time
+from ._data import (get_last_rotation_time, move_log_file,
+                    save_last_rotation_time)
 from ._enums import Level
 from ._time import parse_time_data
 from .output import _output_builder, level, line_number
