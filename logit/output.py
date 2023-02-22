@@ -1,8 +1,9 @@
 import datetime
 import inspect
 import os
-from .types_ import LogFormatDict
+
 from . import _common
+from .types_ import LogFormatDict
 
 
 def local_time() -> str:

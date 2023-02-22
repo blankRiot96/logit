@@ -1,10 +1,15 @@
-from ._enums import Level
-from .types_ import LogConfigDict
-from . import _common
-
-import typing as _t
+import os
 import pathlib as _p
-from .output import _output_builder, line_number, level
+import shutil
+import time
+import typing as _t
+
+from . import _common
+from ._data import get_last_rotation_time, move_log_file, save_last_rotation_time
+from ._enums import Level
+from ._time import parse_time_data
+from .output import _output_builder, level, line_number
+from .types_ import LogConfigDict
 
 
 class Logger:
@@ -18,8 +23,10 @@ class Logger:
     def __init__(self) -> None:
         self.__level = Level.CLUTTER
         self.rank = self.level.get_level_value()
-        self.log_file_path: _p.Path | str = "app.log"
+        self.log_file_path: _p.Path | str = _p.Path("app.log")
+        self.log_rotation_time: int | None = 10
         self.format = {"msg-prefix": [level, line_number], "msg-suffix": []}
+        self._rotate_time()
 
     @property
     def level(self) -> Level:
@@ -30,8 +37,26 @@ class Logger:
         self.__level = val
         self.rank = self.__level.get_level_value()
 
+    def _rotate_time(self) -> None:
+        """Rotates log files based on time duration."""
+        if self.log_rotation_time is None:
+            return
+
+        last_rotation_time = get_last_rotation_time(self.log_file_path)
+
+        if time.time() - last_rotation_time > self.log_rotation_time:
+            move_log_file(self.log_file_path)
+            save_last_rotation_time(self.log_file_path)
+
     def _output(self, msg: object) -> None:
-        """Prints out log outputs to console."""
+        """Prints out log outputs to console and log file."""
+        output = _output_builder(self.format, msg)
+
+        if not os.path.exists(self.log_file_path):
+            _p.Path(self.log_file_path).touch()
+
+        with open(self.log_file_path, "a") as f:
+            f.write(output + "\n")
         print(_output_builder(self.format, msg))
 
     def config_from_dict(self, log_config_dict: LogConfigDict) -> None:
@@ -65,7 +90,7 @@ class Logger:
             log_file_path: The Location of the log file.
 
         Returns:
-            A dictionary containing the releveant log config
+            A dictionary containing the relevant log config
         """
         self.level = level
         self.log_file_path = log_file_path
@@ -85,7 +110,7 @@ class Logger:
         self._output(msg)
 
     def info(self, msg: object = "") -> None:
-        """Clutter the terminal with temporary logs.
+        """Log some information.
 
         Arguments:
             msg: A message to clutter the terminal with.
@@ -97,7 +122,7 @@ class Logger:
         self._output(msg)
 
     def debug(self, msg: object = "") -> None:
-        """Clutter the terminal with temporary logs.
+        """Log some debug messages.
 
         Arguments:
             msg: A message to clutter the terminal with.
@@ -109,7 +134,7 @@ class Logger:
         self._output(msg)
 
     def warning(self, msg: object = "") -> None:
-        """Clutter the terminal with temporary logs.
+        """Warn user in logs.
 
         Arguments:
             msg: A message to clutter the terminal with.
@@ -122,7 +147,7 @@ class Logger:
         self._output(msg)
 
     def error(self, msg: object = "") -> None:
-        """Clutter the terminal with temporary logs.
+        """Mention presence of error in logs.
 
         Arguments:
             msg: A message to clutter the terminal with.
