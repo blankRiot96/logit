@@ -18,7 +18,7 @@ def get_logit_config() -> dict:
     get_logit_config() -> {
         files: {
             "path/to/app.log": {
-                "last_rotation": 120981923091,
+                "last_rotation": 1677050919.7114477,
             },
             ...
         }
@@ -41,7 +41,8 @@ def save_last_rotation_time(log_file_path: Path) -> None:
     """Saves the last rotation time for log file to AppData."""
 
     config = get_logit_config()
-    config["files"][log_file_path]["last_rotation"] = time.time()
+    abs_path = str(log_file_path.absolute())
+    config["files"][abs_path]["last_rotation"] = time.time()
     set_logit_config(config)
 
 
@@ -49,17 +50,20 @@ def get_last_rotation_time(log_file_path: Path) -> int:
     """Gets the last rotation time for log file in AppData."""
 
     config = get_logit_config()
+    abs_path = str(log_file_path.absolute())
 
-    if config["files"].get(log_file_path) is None:
-        config["files"][log_file_path] = {"last_rotation": time.time()}
+    if config["files"].get(abs_path) is None:
+        print("why is this happening")
+        config["files"][abs_path] = {"last_rotation": time.time()}
         set_logit_config(config)
-    return config["files"][log_file_path]["last_rotation"]
+    return config["files"][abs_path]["last_rotation"]
 
 
 def _create_archive_logfile_name(log_file_path: Path) -> str:
     """Creates an archive logfile name."""
     now = datetime.datetime.now()
-    return f"{now.date()}-archive-{log_file_path.name}"
+    archive_file_name = f"{now.date()}-archive-{log_file_path.name}"
+    return (APP_DATA_FOLDER / Path(archive_file_name)).absolute()
 
 
 def move_log_file(log_file_path: Path) -> None:

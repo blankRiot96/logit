@@ -23,7 +23,7 @@ class Logger:
     def __init__(self) -> None:
         self.__level = Level.CLUTTER
         self.rank = self.level.get_level_value()
-        self.log_file_path: _p.Path | str = "app.log"
+        self.log_file_path: _p.Path | str = _p.Path("app.log")
         self.log_rotation_time: int | None = 10
         self.format = {"msg-prefix": [level, line_number], "msg-suffix": []}
         self._rotate_time()
@@ -43,7 +43,8 @@ class Logger:
             return
 
         last_rotation_time = get_last_rotation_time(self.log_file_path)
-        if last_rotation_time - time.time() > self.log_rotation_time:
+
+        if time.time() - last_rotation_time > self.log_rotation_time:
             move_log_file(self.log_file_path)
             save_last_rotation_time(self.log_file_path)
 
