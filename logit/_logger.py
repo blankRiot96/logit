@@ -24,7 +24,7 @@ class Logger:
         self.__level = Level.CLUTTER
         self.rank = self.level.get_level_value()
         self.log_file_path: _p.Path | str = _p.Path("app.log")
-        self.log_rotation_time: int | None = 10
+        self.log_rotation_time: int | None = None
         self.format = {"msg-prefix": [level, line_number], "msg-suffix": []}
         self._rotate_time()
 
