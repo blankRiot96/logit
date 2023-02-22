@@ -11,6 +11,7 @@ class Level(StrEnum):
     DEBUG - Debug messages
     WARNING - Warnings
     ERROR - Error occured
+    CRITICAL - Application unable to continue
     """
 
     CLUTTER = auto()
@@ -18,6 +19,7 @@ class Level(StrEnum):
     DEBUG = auto()
     WARNING = auto()
     ERROR = auto()
+    CRITICAL = auto()
 
     def get_inversed_dict(self) -> dict:
         """Gets the inversed representation of the Level enum.

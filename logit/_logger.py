@@ -157,3 +157,15 @@ class Logger:
 
         _common.LEVEL = "ERROR"
         self._output(msg)
+
+    def critical(self, msg: object = "") -> None:
+        """Mention presence of error in logs.
+
+        Arguments:
+            msg: A message to clutter the terminal with.
+        """
+        if self.rank > 5:
+            return
+
+        _common.LEVEL = "CRITICAL"
+        self._output(msg)

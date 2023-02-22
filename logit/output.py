@@ -26,7 +26,7 @@ def line_number() -> str:
 def level() -> str:
     """Returns the current level of logging."""
 
-    return _common.LEVEL
+    return f"[{_common.LEVEL}]"
 
 
 def _output_builder(format: LogFormatDict, msg: object) -> str:
