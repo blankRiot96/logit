@@ -9,7 +9,7 @@ from .types_ import LogFormatDict
 
 _LEVEL_COLORS = {
     "CLUTTER": "",
-    "INFO": colorama.Fore.WHITE,
+    "INFO": colorama.Fore.CYAN,
     "DEBUG": colorama.Fore.GREEN,
     "WARNING": colorama.Fore.YELLOW,
     "ERROR": colorama.Fore.RED,
@@ -37,7 +37,7 @@ def line_number() -> str:
     filename = os.path.basename(frameinfo.f_code.co_filename)
     line_number = frameinfo.f_lineno
 
-    return f"{filename}:{line_number}"
+    return _get_colored_str(f"{filename}:{line_number}", colorama.Fore.LIGHTCYAN_EX)
 
 
 def level() -> str:
