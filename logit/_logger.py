@@ -5,10 +5,10 @@ import time
 import typing as _t
 
 from . import _common
-from ._data import (get_last_rotation_time, move_log_file,
-                    save_last_rotation_time)
+from ._data import get_last_rotation_time, move_log_file, save_last_rotation_time
 from ._enums import Level
 from ._time import parse_time_data
+from ._space import parse_space_data
 from .output import _output_builder, level, line_number
 from .types_ import LogConfigDict
 
@@ -26,8 +26,10 @@ class Logger:
         self.rank = self.level.get_level_value()
         self.log_file_path: _p.Path | str = _p.Path("app.log")
         self.log_rotation_time: int | None = None
+        self.log_rotation_space: int | None = None
         self.format = {"msg-prefix": [level, line_number], "msg-suffix": []}
         self._rotate_time()
+        self._rotate_space()
 
     @property
     def level(self) -> Level:
@@ -48,6 +50,14 @@ class Logger:
         if time.time() - last_rotation_time > self.log_rotation_time:
             move_log_file(self.log_file_path)
             save_last_rotation_time(self.log_file_path)
+
+    def _rotate_space(self) -> None:
+        """Rotates log files based on space consumed by log file."""
+        if self.log_rotation_space is None:
+            return
+
+        if len(self.log_file_path.read_bytes()) * 1000 >= self.log_rotation_space:
+            move_log_file(self.log_file_path)
 
     def _output(self, msg: object) -> None:
         """Prints out log outputs to console and log file."""
@@ -84,7 +94,8 @@ class Logger:
         self,
         level: Level = Level.CLUTTER,
         log_file_path: _p.Path | str = "app.log",
-        rotation_time: str = None,
+        rotation_time: None | str = None,
+        rotation_space: None | str = None,
     ) -> LogConfigDict:
         """Configurates the logger.
 
@@ -97,7 +108,11 @@ class Logger:
         """
         self.level = level
         self.log_file_path = log_file_path
-        self.log_rotation_time = parse_time_data(rotation_time)
+        if self.log_rotation_time is not None:
+            self.log_rotation_time = parse_time_data(rotation_time)
+
+        if self.log_rotation_space is not None:
+            self.log_rotation_space = parse_space_data(rotation_space)
 
         return {"level": self.level.value, "log_file_path": str(log_file_path)}
 
