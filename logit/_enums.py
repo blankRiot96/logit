@@ -52,3 +52,9 @@ class Level(StrEnum):
         """Gets the level ranking of the level."""
 
         return tuple(Level).index(level)
+
+
+class OutputFormat(StrEnum):
+    JSON = auto()
+    XML = auto()
+    CSV = auto()

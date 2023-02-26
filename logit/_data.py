@@ -70,3 +70,16 @@ def move_log_file(log_file_path: Path) -> None:
     """Moves the log file path and creates an archive."""
     shutil.move(log_file_path, _create_archive_logfile_name(log_file_path))
     log_file_path.touch()
+
+
+def get_json_logs(file_path: Path) -> list:
+    """Gets the structural logs in JSON format."""
+    try:
+        with open(file_path) as f:
+            logs = json.load(f)
+    except json.decoder.JSONDecodeError:
+        with open(file_path, "w") as f:
+            json.dump([], f, indent=2)
+            return []
+
+    return logs

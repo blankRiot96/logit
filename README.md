@@ -27,10 +27,33 @@ pip install logit-axis
 ```
 
 ## Features
-- [ ] *Structured logs*- allows consistent output to different formats that can be easily searched or queried. Formats such as: 
+- [x] *Structured logs*- allows consistent output to different formats that can be easily searched or queried. Formats such as: 
   - JSON
   - XML
-  - CSV
+  - CSV  
+
+This is done by using the `OutputFormat` enum to create a new structural logger.  
+This is added to the `log`, by using the `add_structural_logger` method.  
+As suggested, this supports multiple structural loggers.
+```py
+from logit import log, OutputFormat
+
+log.add_structural_logger(OutputFormat.JSON)
+
+log.debug("Application running at Port:5050")
+```
+
+Output JSON file:
+```json
+[
+  {
+    "level": "[DEBUG]",
+    "line_number": "_logger.py:136",
+    "local_time": "23:10:1"
+  }
+]
+```
+
 - [x] *Custom log format* - users can customize the sequence, color, or even information which is showed in logs.  
 This is done by specifing the various prefix and suffix strings that are displayed before and after the log message.  
 Example:

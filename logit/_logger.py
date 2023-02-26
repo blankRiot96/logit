@@ -1,16 +1,78 @@
+from __future__ import annotations
+
 import os
 import pathlib as _p
+import json
 import shutil
 import time
 import typing as _t
 
 from . import _common
-from ._data import get_last_rotation_time, move_log_file, save_last_rotation_time
-from ._enums import Level
+from ._data import (
+    get_last_rotation_time,
+    move_log_file,
+    save_last_rotation_time,
+    get_json_logs,
+)
+from ._enums import Level, OutputFormat
 from ._time import parse_time_data
 from ._space import parse_space_data
-from .output import _output_builder, level, line_number
+from .output import _output_builder, level, line_number, local_time
 from .types_ import LogConfigDict, LogFormatDict
+from ._helper import escape_ansi
+
+
+class FormatNotSupported(Exception):
+    """Invoked when a particular format is not supported."""
+
+
+class StructualLogger:
+    """A logger that handles structural logging."""
+
+    def __init__(self, output_format: OutputFormat, logger: Logger) -> None:
+        self.output_format = output_format
+        self.logger = logger
+        self._create_file()
+
+    def _create_file(self) -> None:
+        """Creates the structural log file."""
+        self.file_name = (
+            f"structured-{self.logger.log_file_path.stem}.{self.output_format.value}"
+        )
+        self.file_path = _common.get_path(self.file_name)
+
+    def _build_log(self) -> dict:
+        """Builds the structured log."""
+        log = {
+            "level": escape_ansi(level()),
+            "line_number": escape_ansi(line_number()),
+            "local_time": escape_ansi(local_time()),
+        }
+        output_callables = (
+            self.logger.format["msg-prefix"] + self.logger.format["msg-suffix"]
+        )
+        for callable in output_callables:
+            if callable in (local_time, line_number, level):
+                continue
+            log[callable.__name__] = escape_ansi(callable())
+
+        return log
+
+    def output_json(self) -> None:
+        """Creates a structural JSON file."""
+
+        logs = get_json_logs(self.file_path)
+        log = self._build_log()
+        logs.append(log)
+        with open(self.file_path, "w") as f:
+            json.dump(logs, f, indent=2)
+
+    def output(self) -> None:
+        """Outputs to relevant format."""
+        if self.output_format == OutputFormat.JSON:
+            self.output_json()
+        else:
+            raise FormatNotSupported(f"{self.output_format} is not supported yet.")
 
 
 class Logger:
@@ -31,6 +93,7 @@ class Logger:
             "msg-prefix": [level, line_number],
             "msg-suffix": [],
         }
+        self.structural_loggers: set[StructualLogger] = set()
         self._rotate_time()
         self._rotate_space()
 
@@ -62,16 +125,32 @@ class Logger:
         if len(self.log_file_path.read_bytes()) * 1000 >= self.log_rotation_space:
             move_log_file(self.log_file_path)
 
-    def _output(self, msg: object) -> None:
-        """Prints out log outputs to console and log file."""
-        output = _output_builder(self.format, msg)
-
+    def _create_log_file(self):
+        """Creates log file if it doesn't already exist."""
         if not os.path.exists(self.log_file_path):
             _p.Path(self.log_file_path).touch()
 
+    def _output_structural_logs(self):
+        """Run the output of all the structural loggers."""
+        for structural_logger in self.structural_loggers:
+            structural_logger.output()
+
+    def _write_to_log_file(self, output: str) -> None:
+        """Writes the output to the log file."""
         with open(self.log_file_path, "a") as f:
             f.write(output + "\n")
+
+    def _output(self, msg: object) -> None:
+        """Prints out log outputs to console and log file."""
+        output = _output_builder(self.format, msg)
+        self._output_structural_logs()
+        self._create_log_file()
+
+        self._write_to_log_file(output)
         print(_output_builder(self.format, msg))
+
+    def add_structural_logger(self, output_format: OutputFormat) -> None:
+        self.structural_loggers.add(StructualLogger(output_format, self))
 
     def config_from_dict(self, log_config_dict: LogConfigDict) -> None:
         """Configurate the logger from a dictionary.
