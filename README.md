@@ -25,21 +25,6 @@ output:
 ```
 pip install logit-axis
 ```
-OR
-
-- Clone the repository, and install from directory
-```
-git clone https://github.com/blankRiot96/logit
-cd logit
-pip install .
-```
-
-OR
-
-- Or simply use the `git+` syntax,
-```
-pip install git+https://github.com/blankRiot96/logit
-```
 
 ## Features
 - [ ] *Structured logs*- allows consistent output to different formats that can be easily searched or queried. Formats such as: 
