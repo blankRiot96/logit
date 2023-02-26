@@ -10,7 +10,7 @@ from ._enums import Level
 from ._time import parse_time_data
 from ._space import parse_space_data
 from .output import _output_builder, level, line_number
-from .types_ import LogConfigDict
+from .types_ import LogConfigDict, LogFormatDict
 
 
 class Logger:
@@ -27,7 +27,10 @@ class Logger:
         self.log_file_path: _p.Path | str = _p.Path("app.log")
         self.log_rotation_time: int | None = None
         self.log_rotation_space: int | None = None
-        self.format = {"msg-prefix": [level, line_number], "msg-suffix": []}
+        self.format: LogFormatDict = {
+            "msg-prefix": [level, line_number],
+            "msg-suffix": [],
+        }
         self._rotate_time()
         self._rotate_space()
 
