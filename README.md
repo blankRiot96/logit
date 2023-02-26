@@ -13,11 +13,11 @@ log.config(level=Level.ERROR)
 log.clutter("Wont appear no more")
 log.error("Error error!")
 ```
-
-output:
-```
-CLUTTER | test.py:3 | Test message!
-ERROR | test.py:6 | Error error!
+ 
+output:  
+```log
+[CLUTTER] | test.py:3 | Test message!
+[ERROR] | test.py:8 | Error error!
 ```
 
 ## 🛠️ Setup and Install
@@ -40,6 +40,7 @@ OR
 ```
 pip install git+https://github.com/blankRiot96/logit
 ```
+
 
 ## 🍉 Credits
 - @blankRiot96 - Lead maintainer
