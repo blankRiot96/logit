@@ -6,6 +6,7 @@ import shutil
 import time
 from functools import lru_cache
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
 from ._common import APP_DATA_FOLDER, CONFIG_FILE
 
@@ -81,5 +82,21 @@ def get_json_logs(file_path: Path) -> list:
         with open(file_path, "w") as f:
             json.dump([], f, indent=2)
             return []
+
+    return logs
+
+
+def get_xml_logs(file_path: Path) -> list:
+    """Gets the structural logs in XML format."""
+
+    logs = []
+    tree = ET.parse(file_path)
+    root = tree.getroot()
+
+    for log in root.findall("log"):
+        true_log = {}
+        for attr in log.iterfind("*"):
+            true_log[attr.tag] = attr.text
+        logs.append(true_log)
 
     return logs

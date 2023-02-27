@@ -6,6 +6,8 @@ import json
 import shutil
 import time
 import typing as _t
+import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import Element
 
 from . import _common
 from ._data import (
@@ -62,8 +64,17 @@ class StructualLogger:
     def output_xml(self, msg: object) -> None:
         """Appends output to a structural XML file."""
 
-        logs = ...
         log = self._build_log(msg)
+        xml_log = Element("log")
+        for key, value in log.items():
+            sub_element = Element(key)
+            sub_element.text = value
+            xml_log.append(sub_element)
+
+        tree = ET.parse(self.file_path)
+        root = tree.getroot()
+        root.append(xml_log)
+        tree.write(self.file_path)
 
     def output_json(self, msg: object) -> None:
         """Appends output to a structural JSON file."""
@@ -78,6 +89,8 @@ class StructualLogger:
         """Outputs to relevant format."""
         if self.output_format == OutputFormat.JSON:
             self.output_json(msg)
+        elif self.output_format == OutputFormat.XML:
+            self.output_xml(msg)
         else:
             raise FormatNotSupported(f"{self.output_format} is not supported yet.")
 
