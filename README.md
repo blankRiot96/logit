@@ -47,9 +47,10 @@ Output JSON file:
 ```json
 [
   {
+    "msg": "Application running at Port:5050",
     "level": "[DEBUG]",
-    "line_number": "_logger.py:136",
-    "local_time": "23:10:1"
+    "line_number": "_logger.py:137",
+    "local_time": "13:18:35"
   }
 ]
 ```
