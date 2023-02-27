@@ -41,9 +41,10 @@ class StructualLogger:
         )
         self.file_path = _common.get_path(self.file_name)
 
-    def _build_log(self) -> dict:
+    def _build_log(self, msg: object) -> dict:
         """Builds the structured log."""
         log = {
+            "msg": str(msg),
             "level": escape_ansi(level()),
             "line_number": escape_ansi(line_number()),
             "local_time": escape_ansi(local_time()),
@@ -58,19 +59,19 @@ class StructualLogger:
 
         return log
 
-    def output_json(self) -> None:
+    def output_json(self, msg: object) -> None:
         """Creates a structural JSON file."""
 
         logs = get_json_logs(self.file_path)
-        log = self._build_log()
+        log = self._build_log(msg)
         logs.append(log)
         with open(self.file_path, "w") as f:
             json.dump(logs, f, indent=2)
 
-    def output(self) -> None:
+    def output(self, msg: object) -> None:
         """Outputs to relevant format."""
         if self.output_format == OutputFormat.JSON:
-            self.output_json()
+            self.output_json(msg)
         else:
             raise FormatNotSupported(f"{self.output_format} is not supported yet.")
 
@@ -130,10 +131,10 @@ class Logger:
         if not os.path.exists(self.log_file_path):
             _p.Path(self.log_file_path).touch()
 
-    def _output_structural_logs(self):
+    def _output_structural_logs(self, msg: object):
         """Run the output of all the structural loggers."""
         for structural_logger in self.structural_loggers:
-            structural_logger.output()
+            structural_logger.output(msg)
 
     def _write_to_log_file(self, output: str) -> None:
         """Writes the output to the log file."""
@@ -143,7 +144,7 @@ class Logger:
     def _output(self, msg: object) -> None:
         """Prints out log outputs to console and log file."""
         output = _output_builder(self.format, msg)
-        self._output_structural_logs()
+        self._output_structural_logs(msg)
         self._create_log_file()
 
         self._write_to_log_file(output)
