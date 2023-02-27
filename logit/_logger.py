@@ -224,11 +224,6 @@ class Logger:
         return {"level": self.level.value, "log_file_path": str(log_file_path)}
 
     def clutter(self, msg: object = "") -> None:
-        """Clutter the terminal with temporary logs.
-
-        Arguments:
-            msg: A message to clutter the terminal with.
-        """
         if self.rank > 0:
             return
 
@@ -236,11 +231,6 @@ class Logger:
         self._output(msg)
 
     def info(self, msg: object = "") -> None:
-        """Log some information.
-
-        Arguments:
-            msg: A message to clutter the terminal with.
-        """
         if self.rank > 1:
             return
 
@@ -248,11 +238,6 @@ class Logger:
         self._output(msg)
 
     def debug(self, msg: object = "") -> None:
-        """Log some debug messages.
-
-        Arguments:
-            msg: A message to clutter the terminal with.
-        """
         if self.rank > 2:
             return
 
@@ -260,11 +245,6 @@ class Logger:
         self._output(msg)
 
     def warning(self, msg: object = "") -> None:
-        """Warn user in logs.
-
-        Arguments:
-            msg: A message to clutter the terminal with.
-        """
         if self.rank > 3:
 
             return
@@ -273,11 +253,6 @@ class Logger:
         self._output(msg)
 
     def error(self, msg: object = "") -> None:
-        """Mention presence of error in logs.
-
-        Arguments:
-            msg: A message to clutter the terminal with.
-        """
         if self.rank > 4:
             return
 
@@ -285,12 +260,6 @@ class Logger:
         self._output(msg)
 
     def critical(self, msg: object = "") -> None:
-        """Mention presence of error in logs.
-
-        Arguments:
-            msg: Critical application hazard
-            alerts.
-        """
         if self.rank > 5:
             return
 
