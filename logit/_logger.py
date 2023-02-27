@@ -3,11 +3,12 @@ from __future__ import annotations
 import os
 import pathlib as _p
 import json
+import xml
 import shutil
 import time
 import typing as _t
 import xml.etree.ElementTree as ET
-from xml.etree.ElementTree import Element
+from xml.etree.ElementTree import Element, ElementTree
 
 from . import _common
 from ._data import (
@@ -64,14 +65,18 @@ class StructualLogger:
     def output_xml(self, msg: object) -> None:
         """Appends output to a structural XML file."""
 
+        try:
+            tree = ET.parse(self.file_path)
+        except xml.etree.ElementTree.ParseError:
+            data_tag = Element("data")
+            tree = ElementTree(data_tag)
+
         log = self._build_log(msg)
         xml_log = Element("log")
         for key, value in log.items():
             sub_element = Element(key)
             sub_element.text = value
             xml_log.append(sub_element)
-
-        tree = ET.parse(self.file_path)
         root = tree.getroot()
         root.append(xml_log)
         tree.write(self.file_path)
