@@ -59,8 +59,14 @@ class StructualLogger:
 
         return log
 
+    def output_xml(self, msg: object) -> None:
+        """Appends output to a structural XML file."""
+
+        logs = ...
+        log = self._build_log(msg)
+
     def output_json(self, msg: object) -> None:
-        """Creates a structural JSON file."""
+        """Appends output to a structural JSON file."""
 
         logs = get_json_logs(self.file_path)
         log = self._build_log(msg)

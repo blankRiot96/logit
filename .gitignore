@@ -1,5 +1,8 @@
 # Structured logs
-*.json
+structured-app.json
+structured-app.xml
+structured-app.csv
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
