@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import os
 import pathlib as _p
 import json
@@ -16,6 +17,7 @@ from ._data import (
     move_log_file,
     save_last_rotation_time,
     get_json_logs,
+    get_csv_logs,
 )
 from ._enums import Level, OutputFormat
 from ._time import parse_time_data
@@ -90,12 +92,30 @@ class StructualLogger:
         with open(self.file_path, "w") as f:
             json.dump(logs, f, indent=2)
 
+    def output_csv(self, msg: object) -> None:
+        """Appends output to a structural CSV file."""
+
+        logs = get_csv_logs(self.file_path)
+        log = self._build_log(msg)
+
+        if not logs:
+            with open(self.file_path, "w") as f:
+                writer = csv.DictWriter(f, fieldnames=log.keys())
+                writer.writeheader()
+        logs.append(log)
+
+        with open(self.file_path, "a") as f:
+            writer = csv.DictWriter(f, fieldnames=log.keys())
+            writer.writerows([log])
+
     def output(self, msg: object) -> None:
         """Outputs to relevant format."""
         if self.output_format == OutputFormat.JSON:
             self.output_json(msg)
         elif self.output_format == OutputFormat.XML:
             self.output_xml(msg)
+        elif self.output_format == OutputFormat.CSV:
+            self.output_csv(msg)
         else:
             raise FormatNotSupported(f"{self.output_format} is not supported yet.")
 

@@ -1,5 +1,6 @@
 """Handles all App Data for logit."""
 
+import csv
 import datetime
 import json
 import shutil
@@ -100,3 +101,12 @@ def get_xml_logs(file_path: Path) -> list:
         logs.append(true_log)
 
     return logs
+
+
+def get_csv_logs(file_path: Path) -> list:
+    """Gets the structural logs in CSV format."""
+
+    with open(file_path) as f:
+        reader = csv.reader(f)
+
+        return list(reader)

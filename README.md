@@ -55,6 +55,7 @@ Output JSON file:
 ]
 ```
 
+
 - [x] *Custom log format* - users can customize the sequence, color, or even information which is showed in logs.  
 This is done by specifing the various prefix and suffix strings that are displayed before and after the log message.  
 Example:
