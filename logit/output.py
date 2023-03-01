@@ -29,10 +29,10 @@ def local_time() -> str:
     return f"{now.hour}:{now.minute}:{now.second}"
 
 
-def line_number() -> str:
+def line_number(abstraction: int = 4) -> str:
     """Gets the line number and file name at which a function is called."""
     total_stack = inspect.stack()  # total complete stack
-    frameinfo = total_stack[4][0]  # info on rel frame
+    frameinfo = total_stack[abstraction][0]  # info on rel frame
 
     filename = os.path.basename(frameinfo.f_code.co_filename)
     line_number = frameinfo.f_lineno

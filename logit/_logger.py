@@ -51,7 +51,7 @@ class StructualLogger:
         log = {
             "msg": str(msg),
             "level": escape_ansi(level()),
-            "line_number": escape_ansi(line_number()),
+            "line_number": escape_ansi(line_number(abstraction=7)),
             "local_time": escape_ansi(local_time()),
         }
         output_callables = (
