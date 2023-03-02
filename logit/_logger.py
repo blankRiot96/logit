@@ -24,7 +24,6 @@ from ._time import parse_time_data
 from ._space import parse_space_data
 from .output import _output_builder, level, line_number, local_time
 from .types_ import LogConfigDict, LogFormatDict
-from ._helper import escape_ansi
 
 
 class FormatNotSupported(Exception):
@@ -50,9 +49,9 @@ class StructualLogger:
         """Builds the structured log."""
         log = {
             "msg": str(msg),
-            "level": escape_ansi(level()),
-            "line_number": escape_ansi(line_number(abstraction=7)),
-            "local_time": escape_ansi(local_time()),
+            "level": (level()),
+            "line_number": (line_number(abstraction=7)),
+            "local_time": (local_time()),
         }
         output_callables = (
             self.logger.format["msg-prefix"] + self.logger.format["msg-suffix"]
@@ -60,7 +59,7 @@ class StructualLogger:
         for callable in output_callables:
             if callable in (local_time, line_number, level):
                 continue
-            log[callable.__name__] = escape_ansi(callable())
+            log[callable.__name__] = callable()
 
         return log
 
@@ -192,7 +191,7 @@ class Logger:
         self._create_log_file()
 
         self._write_to_log_file(output)
-        print(_output_builder(self.format, msg))
+        print(_output_builder(self.format, msg, color=True))
 
     def add_structural_logger(self, output_format: OutputFormat) -> None:
         self.structural_loggers.add(StructualLogger(output_format, self))
