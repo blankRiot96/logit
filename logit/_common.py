@@ -16,9 +16,9 @@ def get_path(path: str | Path, file=True) -> Path:
 
 LEVEL: str = "CLUTTER"
 APP_DATA_FOLDER = get_path(Path(os.getenv("APPDATA")) / "logit", file=False)
-CONFIG_FILE = get_path(APP_DATA_FOLDER / "config.json")
 LOCAL_CONFIG_PATH = get_path(".logit/", file=False)
+CONFIG_FILE = LOCAL_CONFIG_PATH / "config.json"
 
 if not CONFIG_FILE.exists():
     with open(CONFIG_FILE, "w") as f:
-        json.dump({"files": {}}, f, indent=2)
+        json.dump({}, f, indent=2)

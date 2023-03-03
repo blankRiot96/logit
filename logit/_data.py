@@ -9,7 +9,7 @@ from functools import lru_cache
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-from ._common import APP_DATA_FOLDER, CONFIG_FILE
+from ._common import APP_DATA_FOLDER, CONFIG_FILE, LOCAL_CONFIG_PATH
 
 
 @lru_cache
@@ -18,12 +18,8 @@ def get_logit_config() -> dict:
 
     Example:
     get_logit_config() -> {
-        files: {
-            "path/to/app.log": {
-                "last_rotation": 1677050919.7114477,
-            },
-            ...
-        }
+        "last_rotation": 1677050919.7114477,
+        ...
     }
     """
     with open(CONFIG_FILE) as f:
@@ -43,8 +39,7 @@ def save_last_rotation_time(log_file_path: Path) -> None:
     """Saves the last rotation time for log file to AppData."""
 
     config = get_logit_config()
-    abs_path = str(log_file_path.absolute())
-    config["files"][abs_path]["last_rotation"] = time.time()
+    config["last_rotation"] = time.time()
     set_logit_config(config)
 
 
@@ -55,17 +50,16 @@ def get_last_rotation_time(log_file_path: Path) -> int:
     abs_path = str(log_file_path.absolute())
 
     if config["files"].get(abs_path) is None:
-        print("why is this happening")
-        config["files"][abs_path] = {"last_rotation": time.time()}
+        config["last_rotation"] = time.time()
         set_logit_config(config)
-    return config["files"][abs_path]["last_rotation"]
+    return config["last_rotation"]
 
 
 def _create_archive_logfile_name(log_file_path: Path) -> str:
     """Creates an archive logfile name."""
     now = datetime.datetime.now()
     archive_file_name = f"{now.date()}-archive-{log_file_path.name}"
-    return (APP_DATA_FOLDER / Path(archive_file_name)).absolute()
+    return (LOCAL_CONFIG_PATH / Path(archive_file_name)).absolute()
 
 
 def move_log_file(log_file_path: Path) -> None:

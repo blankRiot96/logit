@@ -12,13 +12,17 @@ import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element, ElementTree
 
 from . import _common
-from ._data import (get_csv_logs, get_json_logs, get_last_rotation_time,
-                    move_log_file, save_last_rotation_time)
+from ._data import (
+    get_csv_logs,
+    get_json_logs,
+    get_last_rotation_time,
+    move_log_file,
+    save_last_rotation_time,
+)
 from ._enums import Level, OutputFormat
 from ._space import parse_space_data
 from ._time import parse_time_data
-from .output import (_output_builder, carry_message, level, line_number,
-                     local_time)
+from .output import _output_builder, carry_message, level, line_number, local_time
 from .types_ import LogConfigDict, LogFormatDict
 
 
@@ -169,7 +173,10 @@ class Logger:
         if self.log_rotation_space is None:
             return
 
+        self.debug("STAGE 2")
+        print(len(self.log_file_path.read_bytes()) * 1000)
         if len(self.log_file_path.read_bytes()) * 1000 >= self.log_rotation_space:
+            self.debug("STAGE 3")
             move_log_file(self.log_file_path)
 
     def _create_log_file(self):
@@ -236,12 +243,15 @@ class Logger:
             A dictionary containing the relevant log config
         """
         self.level = level
-        self.log_file_path = log_file_path
-        if self.log_rotation_time is not None:
+        self.log_file_path = _p.Path(log_file_path)
+        if rotation_time is not None:
             self.log_rotation_time = parse_time_data(rotation_time)
+            self._rotate_time()
 
-        if self.log_rotation_space is not None:
+        if rotation_space is not None:
+            self.debug("STAGE 1")
             self.log_rotation_space = parse_space_data(rotation_space)
+            self._rotate_space()
 
         return {"level": self.level.value, "log_file_path": str(log_file_path)}
 

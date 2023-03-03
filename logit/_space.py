@@ -19,13 +19,13 @@ def _premature_split_space_data(text: str) -> tuple[str, str]:
 def _check_valid_space_syntax(text: str) -> bool:
     """Checks if the given text is valid."""
 
-    n_alpha = len(c for c in text if c.isalpha())
+    n_alpha = len(tuple(c for c in text if c.isalpha()))
     is_alnum = text.isalnum()
     is_safe_split = not any(
         char.isdigit() for char in _premature_split_space_data(text)[1]
     )
 
-    return (n_alpha == 1) and is_alnum and is_safe_split
+    return (n_alpha == 2) and is_alnum and is_safe_split
 
 
 def _split_space_data(text: str) -> tuple[int, str]:
