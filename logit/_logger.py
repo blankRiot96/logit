@@ -1,28 +1,24 @@
 from __future__ import annotations
 
 import csv
+import json
 import os
 import pathlib as _p
-import json
-import xml
 import shutil
 import time
 import typing as _t
+import xml
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element, ElementTree
 
 from . import _common
-from ._data import (
-    get_last_rotation_time,
-    move_log_file,
-    save_last_rotation_time,
-    get_json_logs,
-    get_csv_logs,
-)
+from ._data import (get_csv_logs, get_json_logs, get_last_rotation_time,
+                    move_log_file, save_last_rotation_time)
 from ._enums import Level, OutputFormat
-from ._time import parse_time_data
 from ._space import parse_space_data
-from .output import _output_builder, level, line_number, local_time
+from ._time import parse_time_data
+from .output import (_output_builder, carry_message, level, line_number,
+                     local_time)
 from .types_ import LogConfigDict, LogFormatDict
 
 
@@ -48,7 +44,7 @@ class StructualLogger:
     def _build_log(self, msg: object) -> dict:
         """Builds the structured log."""
         log = {
-            "msg": str(msg),
+            "msg": carry_message(msg),
             "level": (level()),
             "line_number": (line_number(abstraction=7)),
             "local_time": (local_time()),
@@ -150,6 +146,13 @@ class Logger:
         self.__level = val
         self.rank = self.__level.get_level_value()
 
+    def _log(self, level: Level, msg: object = "") -> None:
+        if self.rank > level.get_level_value():
+            return
+
+        _common.LEVEL = level.name.upper()
+        self._output(msg)
+
     def _rotate_time(self) -> None:
         """Rotates log files based on time duration."""
         if self.log_rotation_time is None:
@@ -243,44 +246,19 @@ class Logger:
         return {"level": self.level.value, "log_file_path": str(log_file_path)}
 
     def clutter(self, msg: object = "") -> None:
-        if self.rank > 0:
-            return
-
-        _common.LEVEL = "CLUTTER"
-        self._output(msg)
+        self._log(Level.CLUTTER, msg)
 
     def info(self, msg: object = "") -> None:
-        if self.rank > 1:
-            return
-
-        _common.LEVEL = "INFO"
-        self._output(msg)
+        self._log(Level.INFO, msg)
 
     def debug(self, msg: object = "") -> None:
-        if self.rank > 2:
-            return
-
-        _common.LEVEL = "DEBUG"
-        self._output(msg)
+        self._log(Level.DEBUG, msg)
 
     def warning(self, msg: object = "") -> None:
-        if self.rank > 3:
-
-            return
-
-        _common.LEVEL = "WARNING"
-        self._output(msg)
+        self._log(Level.WARNING, msg)
 
     def error(self, msg: object = "") -> None:
-        if self.rank > 4:
-            return
-
-        _common.LEVEL = "ERROR"
-        self._output(msg)
+        self._log(Level.ERROR, msg)
 
     def critical(self, msg: object = "") -> None:
-        if self.rank > 5:
-            return
-
-        _common.LEVEL = "CRITICAL"
-        self._output(msg)
+        self._log(Level.CRITICAL, msg)

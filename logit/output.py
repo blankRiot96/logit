@@ -5,7 +5,7 @@ import os
 import colorama
 
 from . import _common
-from .types_ import LogFormatDict, LogFormatCallable
+from .types_ import LogFormatCallable, LogFormatDict
 
 _LEVEL_COLORS = {
     "CLUTTER": "",
@@ -29,7 +29,7 @@ def local_time() -> str:
     return f"{now.hour}:{now.minute}:{now.second}"
 
 
-def line_number(abstraction: int = 4, color: bool = False) -> str:
+def line_number(abstraction: int = 6, color: bool = False) -> str:
     """Gets the line number and file name at which a function is called."""
     total_stack = inspect.stack()  # total complete stack
     frameinfo = total_stack[abstraction][0]  # info on rel frame
@@ -70,12 +70,21 @@ def _merge_output(
     return output
 
 
+def carry_message(msg: object) -> str:
+    """Returns the string representation of an object."""
+
+    if "__str__" not in dir(msg):
+        return ">>Non Printable<<"
+
+    return str(msg)
+
+
 def _output_builder(format: LogFormatDict, msg: object, color: bool = False) -> str:
     """Builds the output from the given format."""
 
     output = ""
     output = _merge_output(output, "{output} | ", format["msg-prefix"], color)
-    output += msg
+    output += carry_message(msg)
     output = _merge_output(output, " | {output}", format["msg-suffix"], color)
 
     return output
