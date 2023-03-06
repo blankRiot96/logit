@@ -30,7 +30,7 @@ setup(
     #     "Topic :: Multimedia :: Sound/Audio",
     #     "Intended Audience :: End Users/Desktop",
     # ],
-    # entry_points={"console_scripts": ["bp=boilerplate:main"]},
+    entry_points={"console_scripts": ["logit=logit:_cli"]},
     # include_package_data=True,
     # data_files=[
     #     "pyhb/typing_tester/assets/pyhb_icon.png",

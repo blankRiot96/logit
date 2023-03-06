@@ -2,6 +2,7 @@
 
 import csv
 import datetime
+import os
 import json
 import shutil
 import time
@@ -9,7 +10,7 @@ from functools import lru_cache
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-from ._common import APP_DATA_FOLDER, CONFIG_FILE, LOCAL_CONFIG_PATH
+from ._common import APP_DATA_FOLDER, CONFIG_FILE, LOCAL_CONFIG_PATH, ARCHIVES_FOLDER
 
 
 @lru_cache
@@ -59,7 +60,13 @@ def _create_archive_logfile_name(log_file_path: Path) -> str:
     """Creates an archive logfile name."""
     now = datetime.datetime.now()
     archive_file_name = f"{now.date()}-archive-{log_file_path.name}"
-    return (LOCAL_CONFIG_PATH / Path(archive_file_name)).absolute()
+    return (ARCHIVES_FOLDER / Path(archive_file_name)).absolute()
+
+
+def clear_archives() -> str:
+    """Clears all the archives of the application."""
+    for file in ARCHIVES_FOLDER.iterdir():
+        os.remove(file)
 
 
 def move_log_file(log_file_path: Path) -> None:
