@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 # py -m build
 # twine upload dist/*
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 DESCRIPTION = "A logging library."
 LONG_DESCRIPTION = """
 A logging library.
