@@ -5,7 +5,7 @@ import os
 import colorama
 
 from . import _common
-from .types_ import LogFormatDict
+from .types_ import LogFormatCallable, LogFormatDict
 
 _LEVEL_COLORS = {
     "CLUTTER": "",
@@ -29,34 +29,62 @@ def local_time() -> str:
     return f"{now.hour}:{now.minute}:{now.second}"
 
 
-def line_number() -> str:
+def line_number(abstraction: int = 6, color: bool = False) -> str:
     """Gets the line number and file name at which a function is called."""
     total_stack = inspect.stack()  # total complete stack
-    frameinfo = total_stack[4][0]  # info on rel frame
+    frameinfo = total_stack[abstraction][0]  # info on rel frame
 
     filename = os.path.basename(frameinfo.f_code.co_filename)
     line_number = frameinfo.f_lineno
 
-    return _get_colored_str(f"{filename}:{line_number}", colorama.Fore.LIGHTCYAN_EX)
+    if color:
+        return _get_colored_str(f"{filename}:{line_number}", colorama.Fore.LIGHTCYAN_EX)
+    return f"{filename}:{line_number}"
 
 
-def level() -> str:
+def level(color: bool = False) -> str:
     """Returns the current level of logging."""
 
-    colored_level = _get_colored_str(_common.LEVEL, _LEVEL_COLORS[_common.LEVEL])
-    return f"[{colored_level}]"
+    if color:
+        level = _get_colored_str(_common.LEVEL, _LEVEL_COLORS[_common.LEVEL])
+        level = f"[{level}]"
+    else:
+        level = f"[{_common.LEVEL}]"
+
+    return level
 
 
-def _output_builder(format: LogFormatDict, msg: object) -> str:
+def _merge_output(
+    output: str, format_: str, callables: list[LogFormatCallable], color: bool
+) -> str:
+    """Merges the output for the given callable."""
+
+    for callable in callables:
+        if color and "color" in inspect.getfullargspec(callable).args:
+            s = format_.format(output=callable(color=True))
+        else:
+            s = format_.format(output=callable())
+
+        output += s
+
+    return output
+
+
+def carry_message(msg: object) -> str:
+    """Returns the string representation of an object."""
+
+    if "__str__" not in dir(msg):
+        return ">>Non Printable<<"
+
+    return str(msg)
+
+
+def _output_builder(format: LogFormatDict, msg: object, color: bool = False) -> str:
     """Builds the output from the given format."""
 
     output = ""
-    for prefix_callable in format["msg-prefix"]:
-        output += f"{prefix_callable()} | "
-
-    output += msg
-
-    for suffix_callable in format["msg-suffix"]:
-        output += f" | {suffix_callable()}"
+    output = _merge_output(output, "{output} | ", format["msg-prefix"], color)
+    output += carry_message(msg)
+    output = _merge_output(output, " | {output}", format["msg-suffix"], color)
 
     return output
